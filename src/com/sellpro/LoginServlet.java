@@ -17,7 +17,7 @@ import com.sellpro.utils.Database;
 /**
  * Servlet implementation class LoginServlet
  */
-@WebServlet("/login")
+@WebServlet("/home")
 public class LoginServlet extends Servlet {
 	private static final long serialVersionUID = 1L;
        
@@ -43,7 +43,7 @@ public class LoginServlet extends Servlet {
 		HashMap<String, Object> context = new HashMap<String, Object>();
 		Database db = Database.getInstance();
 		
-		PreparedStatement query = db.prepare("SELECT password FROM Users WHERE email=? LIMIT 1");
+		PreparedStatement query = db.prepare("SELECT password FROM Users WHERE email = ? LIMIT 1");
 		try {
 			query.setString(1, request.getParameter("email"));
 			query.execute();
@@ -51,10 +51,11 @@ public class LoginServlet extends Servlet {
 			ResultSet results = query.getResultSet();
 			if (!results.next()) {
 				context.put("error", "Une erreur est survenu, veuillez reessayez");
-			} else if (results.getString(1) != request.getParameter("password")) {
+			} else if (results.getString(1).compareTo(request.getParameter("password")) != 0) {
 				context.put("error", "Login/mot de passe incorrect");
 			} else {
 				redirect("/dashboard", request, response);
+				return;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
